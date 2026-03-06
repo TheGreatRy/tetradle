@@ -65,6 +65,7 @@ button {
   padding: 0;
   margin: 0 6px 0 0;
   height: 58px;
+  width: 40px;
   border-radius: 4px;
   cursor: pointer;
   user-select: none;
