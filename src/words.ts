@@ -1,6 +1,6 @@
 const defaultMessage = ' Generating random words...'
 
-export function getWordOfTheDay() {
+export function getRandomWords() {
     //Allows for one or two words to be input by the user
     if (location.search) {
         try

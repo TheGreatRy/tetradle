@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onUnmounted } from 'vue'
-import { getWordOfTheDay, allWords } from './words'
+import { getRandomWords, allWords } from './words'
 import WordleBoard from './WordleBoard.vue'
 import { LetterState, TurnState } from './types'
 
