@@ -6,7 +6,8 @@ import { LetterState, TurnState } from './types'
 
 const props = defineProps<{
     currentPlayer: number,
-    id: number
+    id: number,
+    answer: string,
 }>()
 
 const emit = defineEmits<{
@@ -17,9 +18,6 @@ console.log(props.currentPlayer)
 
 // Handle keyboard input.
 let allowInput = true
-
-// Get word of the day
-const answer = getWordOfTheDay()
 
 // Board state. Each tile is represented as { letter, state }
 const board = $ref(
@@ -84,13 +82,13 @@ function clearTile() {
 function completeRow() {
     if (currentRow.every((tile) => tile.letter)) {
         const guess = currentRow.map((tile) => tile.letter).join('')
-        if (!allWords.includes(guess) && guess !== answer) {
+        if (!allWords.includes(guess) && guess !== props.answer) {
             shake()
             showMessage(`You Definitely Need Autocorrect`)
             return
         }
 
-        const answerLetters: (string | null)[] = answer.split('')
+        const answerLetters: (string | null)[] = props.answer.split('')
         // first pass: mark correct ones
         currentRow.forEach((tile, i) => {
             if (answerLetters[i] === tile.letter) {
@@ -142,7 +140,7 @@ function completeRow() {
         } else {
         // game over :(
         setTimeout(() => {
-            showMessage(answer.toUpperCase(), -1)
+            showMessage(props.answer.toUpperCase(), -1)
             emit('turnFinished', props.id, TurnState.LOSS)
             }, 1600)
         }
