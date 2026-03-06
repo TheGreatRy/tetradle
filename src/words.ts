@@ -1,27 +1,64 @@
-const defaultMessage = ' Using word of the day instead.'
+const defaultMessage = ' Generating random words...'
 
 export function getWordOfTheDay() {
-  if (location.search) {
-    try {
-      const query = atob(location.search.slice(1))
-      if (query.length !== 5) {
-        alert(`Incorrect word length from encoded query. ${defaultMessage}`)
-      } else {
-        return query
-      }
-    } catch (e) {
-      alert(`Malformed encoded word query. ${defaultMessage}`)
-    }
-  }
+    //Allows for one or two words to be input by the user
+    if (location.search) {
+        try
+        {
+            //query == ?  b64  / b64
+            const query = atob(location.search.slice(1))
+            if (query.length == 5)
+            {
+                //create array with query and random word
 
-  const now = new Date()
-  const start = new Date(2022, 0, 0)
-  const diff = Number(now) - Number(start)
-  let day = Math.floor(diff / (1000 * 60 * 60 * 24))
-  while (day > answers.length) {
-    day -= answers.length
-  }
-  return answers[day]
+                return [query, getRandomWord()]
+            }
+            else if (query.length > 5 && query.length < 11) 
+            {
+                if (query.includes('/'))
+                {
+                    var both = query.split('/')
+
+                    switch (both.length)
+                    {
+                        case 1:
+                            return (both[0].length == 5) ? [both[0], getRandomWord()] : [getRandomWord(), getRandomWord()]
+                        case 2:
+                            //both valid
+                            if (both[0].length == 5 && both[1].length == 5) return both
+                            //neither valid
+                            else if (both[0].length !== 5 && both[1].length !== 5) return [getRandomWord(), getRandomWord()] 
+                            //either or
+                            else
+                            {
+                                return (both[0].length == 5) ? [both[0], getRandomWord()] : [getRandomWord(), both[1]]
+                            }
+                        default:
+                            return [getRandomWord(), getRandomWord()]
+
+                    }
+                }
+            }
+
+            else
+            {
+                alert(`Unable to parse word(s). ${defaultMessage}`)
+            }
+        }
+        catch (e)
+        {
+            alert(`Malformed encoded word query. ${defaultMessage}`)
+        }
+    }
+
+    //defualt
+    return [getRandomWord(), getRandomWord()]
+}
+
+function getRandomWord()
+{
+    var rand = Math.floor(Math.random() * (answers.length))
+    return answers[rand]
 }
 
 // copied from Wordle source
