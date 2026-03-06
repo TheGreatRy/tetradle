@@ -4,3 +4,15 @@ export const enum LetterState {
   PRESENT = 'present',
   ABSENT = 'absent'
 }
+
+export const enum GameState {
+    WORDLE = 'wordle',
+    TETRIS = 'tetris',
+    END = 'end'
+}
+
+export const enum TurnState {
+    CORRECT = 'correct',
+    WRONG = 'wrong',
+    LOSS = 'loss'
+}
