@@ -29,15 +29,12 @@ function onWordleTurnFinished(id: number, state: TurnState) {
         </a>
     </header>
     <div id="gameContainer">
-        <WordleBoard @turnFinished="onWordleTurnFinished" :id="0" :current-player="currentPlayer" :answer="answers[0]" />
-        <WordleBoard @turnFinished="onWordleTurnFinished" :id="1" :current-player="currentPlayer" :answer="answers[1]"/>
+        <WordleBoard @turnFinished="onWordleTurnFinished" :id="0" :active="currentPlayer == 0" :answer="answers[0]" />
+        <WordleBoard @turnFinished="onWordleTurnFinished" :id="1" :active="currentPlayer == 1" :answer="answers[1]"/>
     </div>
 </template>
 
 <style scoped>
-    header {
-        width:500px;
-    }
     #gameContainer {
         display: flex;
         column-gap:50px;
