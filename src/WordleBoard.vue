@@ -187,21 +187,23 @@ function genResultGrid() {
     <div>
         <div id="board">
             <div v-for="(row, index) in board"
-                 :class="[
-            'row',
-            shakeRowIndex === index && 'shake',
-            success && currentRowIndex === index && 'jump'
-        ]">
+                :class="[
+                    'row',
+                    shakeRowIndex === index && 'shake',
+                    success && currentRowIndex === index && 'jump'
+                ]">
                 <div v-for="(tile, index) in row"
-                     :class="['tile', tile.letter && 'filled', tile.state && 'revealed']">
+                    :class="['tile', tile.letter && 'filled', tile.state && 'revealed']"
+                >
                     <div :class="['front', !props.active && 'disabled']" :style="{ transitionDelay: `${index * 300}ms` }">
                         {{ tile.letter }}
                     </div>
                     <div :class="['back', tile.state + (props.active ? '' : '-disabled')]"
-                         :style="{
-                    transitionDelay: `${index * 300}ms`,
-                    animationDelay: `${index * 100}ms`
-                }">
+                        :style="{
+                            transitionDelay: `${index * 300}ms`,
+                            animationDelay: `${index * 100}ms`
+                        }"
+                    >
                         {{ tile.letter }}
                     </div>
                 </div>
