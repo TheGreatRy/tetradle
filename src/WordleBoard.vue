@@ -5,7 +5,7 @@ import Keyboard from './Keyboard.vue'
 import { LetterState, TurnState } from './types'
 
 const props = defineProps<{
-    currentPlayer: number,
+    active: boolean,
     id: number,
     answer: string,
 }>()
@@ -13,8 +13,6 @@ const props = defineProps<{
 const emit = defineEmits<{
     (e: 'turnFinished', id: number, state: TurnState): void
 }>()
-
-console.log(props.currentPlayer)
 
 // Handle keyboard input.
 let allowInput = true
@@ -51,7 +49,7 @@ onUnmounted(() => {
 })
 
 function onKey(key: string) {
-    if (props.currentPlayer !== props.id || !allowInput) return
+    if (!props.active || !allowInput) return
     if (/^[a-zA-Z]$/.test(key)) {
         fillTile(key.toLowerCase())
     } else if (key === 'Backspace') {
@@ -182,6 +180,7 @@ function genResultGrid() {
     })
     .join('\n')
 }
+
 </script>
 
 <template>
@@ -195,10 +194,10 @@ function genResultGrid() {
         ]">
                 <div v-for="(tile, index) in row"
                      :class="['tile', tile.letter && 'filled', tile.state && 'revealed']">
-                    <div class="front" :style="{ transitionDelay: `${index * 300}ms` }">
+                    <div :class="['front', !props.active && 'disabled']" :style="{ transitionDelay: `${index * 300}ms` }">
                         {{ tile.letter }}
                     </div>
-                    <div :class="['back', tile.state]"
+                    <div :class="['back', tile.state + (props.active ? '' : '-disabled')]"
                          :style="{
                     transitionDelay: `${index * 300}ms`,
                     animationDelay: `${index * 100}ms`
@@ -208,7 +207,7 @@ function genResultGrid() {
                 </div>
             </div>
         </div>
-        <Keyboard @key="onKey" :letter-states="letterStates" />
+        <Keyboard @key="onKey" :letter-states="letterStates" :active="props.active"/>
     </div>
 </template>
 
@@ -275,6 +274,9 @@ function genResultGrid() {
 }
 .tile .front {
     border: 2px solid #d3d6da;
+}
+.tile .disabled {
+    border-color: #e6e6e6 !important;
 }
 .tile.filled .front {
     border-color: #999;
