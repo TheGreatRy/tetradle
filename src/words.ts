@@ -13,7 +13,7 @@ export function getRandomWords() {
 
                 return [query, getRandomWord()]
             }
-            else if (query.length > 5 && query.length < 11) 
+            else if (query.length > 5 && query.length < 12) 
             {
                 if (query.includes('/'))
                 {
