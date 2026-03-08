@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onUnmounted } from 'vue'
+import { onUnmounted, onMounted } from 'vue'
 import { LetterState, TurnState } from './types'
 
 const props = defineProps<{
@@ -36,18 +36,53 @@ onUnmounted(() => {
     window.removeEventListener('keyup', onKeyup)
 })
 
+onMounted(() => tick())
+
 function onKey(key: string) {
-    if (!props.active || !allowInput) return
-    /*if (/^[a-zA-Z]$/.test(key)) {
-        fillTile(key.toLowerCase())
-    } else if (key === 'Backspace') {
-        clearTile()
-    } else if (key === 'Enter') {
-        completeRow()
-    }*/
+    if (!allowInput) return
+    if (props.player == 0) {
+        if (key === 'w' || key === 'W') rotate()
+        else if (key === 'a' || key === 'A') moveLeft()
+        else if (key === 'd' || key === 'D') moveRight()
+        else if (key === 's' || key === 'S') drop()
+    }
+    else {
+        if (key === 'ArrowUp') rotate()
+        else if (key === 'ArrowLeft') moveLeft()
+        else if (key === 'ArrowRight') moveRight()
+        else if (key === 'ArrowDown') drop()
+    }
 }
 
-function completeRow() {
+function tick() {
+    setTimeout(() => {
+        tick()
+    }, getTickTime())
+}
+
+function moveLeft() {
+}
+
+function moveRight() {
+
+}
+
+function rotate() {
+
+}
+
+function drop() {
+
+}
+
+function getTickTime() {
+    if (level < 9) return 800 - (level * 83.33)
+    else if (level === 9) return 100  
+    else if (level < 13) return 83.33
+    else if (level < 16) return 66.66
+    else if (level < 19) return 50
+    else if (level < 29) return 33.33
+    else return 16.66
 }
 
 </script>
