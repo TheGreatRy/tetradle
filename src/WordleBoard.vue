@@ -133,14 +133,14 @@ function completeRow() {
                     -1
                 )
                 success = true
-                emit('turnFinished', props.id, TurnState.CORRECT, scoreCost)
+                emit('turnFinished', props.id, TurnState.WIN, scoreCost)
             }, 1600)    
         } else if (currentRowIndex < board.length - 1) {
             // go the next row
             currentRowIndex++
             setTimeout(() => {
                 allowInput = true
-                emit('turnFinished', props.id, TurnState.WRONG, scoreCost)
+                emit('turnFinished', props.id, TurnState.CONTINUE, scoreCost)
             }, 1600)
         } else {
         // game over :(
