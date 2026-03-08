@@ -11,8 +11,11 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-    (e: 'turnFinished', id: number, state: TurnState): void
+    (e: 'turnFinished', id: number, state: TurnState, letters: LetterState[]): void
 }>()
+
+// Scoring values - correct, present, absent
+const pointValues = [-10, -20, -30]
 
 // Handle keyboard input.
 let allowInput = true
@@ -87,10 +90,12 @@ function completeRow() {
         }
 
         const answerLetters: (string | null)[] = props.answer.split('')
+        let scoreCost = 0
         // first pass: mark correct ones
         currentRow.forEach((tile, i) => {
             if (answerLetters[i] === tile.letter) {
                 tile.state = letterStates[tile.letter] = LetterState.CORRECT
+                scoreCost += pointValues[0]
                 answerLetters[i] = null
             }
         })
@@ -98,6 +103,7 @@ function completeRow() {
         currentRow.forEach((tile) => {
             if (!tile.state && answerLetters.includes(tile.letter)) {
                 tile.state = LetterState.PRESENT
+                scoreCost += pointValues[1]
                 answerLetters[answerLetters.indexOf(tile.letter)] = null
                 if (!letterStates[tile.letter]) {
                     letterStates[tile.letter] = LetterState.PRESENT
@@ -108,6 +114,7 @@ function completeRow() {
         currentRow.forEach((tile) => {
             if (!tile.state) {
                 tile.state = LetterState.ABSENT
+                scoreCost += pointValues[2]
                 if (!letterStates[tile.letter]) {
                     letterStates[tile.letter] = LetterState.ABSENT
                 }
@@ -126,20 +133,20 @@ function completeRow() {
                     -1
                 )
                 success = true
-                emit('turnFinished', props.id, TurnState.CORRECT)
+                emit('turnFinished', props.id, TurnState.CORRECT, scoreCost)
             }, 1600)    
         } else if (currentRowIndex < board.length - 1) {
             // go the next row
             currentRowIndex++
             setTimeout(() => {
                 allowInput = true
-                emit('turnFinished', props.id, TurnState.WRONG)
+                emit('turnFinished', props.id, TurnState.WRONG, scoreCost)
             }, 1600)
         } else {
         // game over :(
         setTimeout(() => {
             showMessage(props.answer.toUpperCase(), -1)
-            emit('turnFinished', props.id, TurnState.LOSS)
+            emit('turnFinished', props.id, TurnState.LOSS, scoreCost)
             }, 1600)
         }
     } 

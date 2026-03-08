@@ -9,12 +9,16 @@ let answers: string[] = $ref(getRandomWords())
 let player0Done = false
 let player1Done = false
 
-function onWordleTurnFinished(id: number, state: TurnState) {
-    if (state != TurnState.WRONG) (id === 0 ? player0Done = true : player1Done = true);
+let score = $ref(0);
+
+function onWordleTurnFinished(id: number, state: TurnState, scoreCost: number) {
+    score += scoreCost
+
+    if (state != TurnState.WRONG) (id === 0 ? player0Done = true : player1Done = true)
     if (id === 0) {
-        if (!player1Done) currentPlayer = 1;
+        if (!player1Done) currentPlayer = 1
     }
-    else if (!player0Done) currentPlayer = 0;
+    else if (!player0Done) currentPlayer = 0
 }
 
 </script>
@@ -29,8 +33,14 @@ function onWordleTurnFinished(id: number, state: TurnState) {
         </a>
     </header>
     <div id="gameContainer">
+        <div class="sidebar" id="symmetry my friend"/>
         <WordleBoard @turnFinished="onWordleTurnFinished" :id="0" :active="currentPlayer == 0" :answer="answers[0]" />
-        <WordleBoard @turnFinished="onWordleTurnFinished" :id="1" :active="currentPlayer == 1" :answer="answers[1]"/>
+        <WordleBoard @turnFinished="onWordleTurnFinished" :id="1" :active="currentPlayer == 1" :answer="answers[1]" />
+        <div class="sidebar">
+            <div class="infoDisplay">
+                <b>SCORE:<br/>{{score}}</b>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -38,5 +48,14 @@ function onWordleTurnFinished(id: number, state: TurnState) {
     #gameContainer {
         display: flex;
         column-gap:50px;
+    }
+    .sidebar {
+        width: 150px;
+    }
+    .infoDisplay {
+        border: 2px solid #d3d6da;
+        font-size: 1.3rem;
+        padding: 0.5rem;
+        border-radius: 5px;
     }
 </style>
