@@ -1,43 +1,42 @@
 <script setup lang="ts">
-import { onUnmounted } from 'vue'
-import { getRandomWords, allWords } from './words'
-import WordleBoard from './WordleBoard.vue'
-import TetrisBoard from './TetrisBoard.vue'
-import { LetterState, TurnState, GameStates } from './types'
+    import { onUnmounted } from 'vue'
+    import { getRandomWords, allWords } from './words'
+    import WordleBoard from './WordleBoard.vue'
+    import TetrisBoard from './TetrisBoard.vue'
+    import { LetterState, TurnState, GameStates } from './types'
 
-let currentPlayer: number = $ref(0)
-let blockData: LetterState[] = $ref([])
-let answers: string[] = $ref(getRandomWords())
-let player0Done = false
-let player1Done = false
-let tetrisPhase = $ref(false)
+    let currentPlayer: number = $ref(0)
+    let blockData: LetterState[] = $ref([])
+    let answers: string[] = $ref(getRandomWords())
+    let player0Done = false
+    let player1Done = false
+    let tetrisPhase = $ref(false)
 
-let score = $ref(0);
-let tetrisLevel = $ref(0);
-let tetrisLines = $ref(0);
+    let score = $ref(0);
+    let tetrisLevel = $ref(0);
+    let tetrisLines = $ref(0);
 
-function onWordleTurnFinished(id: number, state: TurnState, scoreCost: number) {
-    score += scoreCost
+    function onWordleTurnFinished(id: number, state: TurnState, scoreCost: number) {
+        score += scoreCost
 
-    if (state != TurnState.CONTINUE) (id === 0 ? player0Done = true : player1Done = true)
-    if (id === 0) {
-        if (!player1Done) currentPlayer = 1
-    }
-    else if (!player0Done) currentPlayer = 0
+        if (state != TurnState.CONTINUE) (id === 0 ? player0Done = true : player1Done = true)
+        if (id === 0) {
+            if (!player1Done) currentPlayer = 1
+        }
+        else if (!player0Done) currentPlayer = 0
 
-    else {
-        console.log(blockData)
-        tetrisPhase = true
-    }
+        else {
+            console.log(blockData)
+            tetrisPhase = true
+        }
     
-}
+    }
 
-function onTetrisTurnFinished(state: TurnState, scoreAdded: number, level: number, lines: number ) {
-    score += scoreAdded
-    tetrisLevel = level
-    tetrisLines = lines
-}
-
+    function onTetrisTurnFinished(state: TurnState, scoreAdded: number, level: number, lines: number ) {
+        score += scoreAdded
+        tetrisLevel = level
+        tetrisLines = lines
+    }
 </script>
 
 <template>
