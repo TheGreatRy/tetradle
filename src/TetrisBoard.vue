@@ -3,7 +3,8 @@ import { onUnmounted, onMounted } from 'vue'
 import { LetterState, TurnState } from './types'
 
 const props = defineProps<{
-    player: number
+    player: number,
+    dataArray: LetterSate[]
 }>()
 
 const emit = defineEmits<{

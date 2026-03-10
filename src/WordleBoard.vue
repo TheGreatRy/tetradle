@@ -8,6 +8,7 @@ const props = defineProps<{
     active: boolean,
     id: number,
     answer: string,
+    dataArray: LetterState[]
 }>()
 
 const emit = defineEmits<{
@@ -121,9 +122,21 @@ function completeRow() {
             }
         })
 
+
         allowInput = false
         if (currentRow.every((tile) => tile.state === LetterState.CORRECT)) {
             // yay!
+            let checkRow = currentRowIndex
+            for (let i = 0; i < currentRowIndex * 5; i++)
+            {
+                if (checkRow != currentRowIndex && i % 5 == 0)
+                {
+                    checkRow--
+                }
+                dataArray[i] = board[checkRow][i % 5].state
+
+                console.log("added block to data!")
+            }
             setTimeout(() => {
                 grid = genResultGrid()
                 showMessage(

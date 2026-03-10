@@ -6,6 +6,7 @@ import TetrisBoard from './TetrisBoard.vue'
 import { LetterState, TurnState, GameStates } from './types'
 
 let currentPlayer: number = $ref(0)
+let blockData: LetterState[]
 let answers: string[] = $ref(getRandomWords())
 let player0Done = false
 let player1Done = false
@@ -14,6 +15,7 @@ let tetrisPhase = $ref(false)
 let score = $ref(0);
 let tetrisLevel = $ref(0);
 let tetrisLines = $ref(0);
+
 
 function onWordleTurnFinished(id: number, state: TurnState, scoreCost: number) {
     score += scoreCost
@@ -48,9 +50,9 @@ function onTetrisTurnFinished(state: TurnState, scoreAdded: number, level: numbe
     <div id="gameContainer">
         <div class="sidebar" id="symmetry my friend" />
         
-        <WordleBoard v-if="!tetrisPhase" @turnFinished="onWordleTurnFinished" :id="0" :active="currentPlayer == 0" :answer="answers[0]" />
-        <WordleBoard v-if="!tetrisPhase" @turnFinished="onWordleTurnFinished" :id="1" :active="currentPlayer == 1" :answer="answers[1]" />
-        <TetrisBoard v-if="tetrisPhase" @turnFinished="onTetrisTurnFinished" :player="currentPlayer" />
+        <WordleBoard v-if="!tetrisPhase" @turnFinished="onWordleTurnFinished" :id="0" :active="currentPlayer == 0" :answer="answers[0]" :dataArray="blockData" />
+        <WordleBoard v-if="!tetrisPhase" @turnFinished="onWordleTurnFinished" :id="1" :active="currentPlayer == 1" :answer="answers[1]" :dataArray="blockData" />
+        <TetrisBoard v-if="tetrisPhase" @turnFinished="onTetrisTurnFinished" :player="currentPlayer" :dataArray="blockData" />
         <div class="sidebar">
             <div class="infoDisplay">
                 <b>SCORE:<br />{{score}}</b>
