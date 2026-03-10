@@ -42,7 +42,7 @@ export class Tetromino {
     }
 
     currentRotationState: number = 0
-    currentPos: Vector2 = new Vector2(1, -1) // (4, -18) starting pos for tetris board, instantiates at (1, -1) for the next piece display
+    currentPos: Vector2 = new Vector2(1, 0) // (4, -18) starting pos for tetris board, instantiates at (1, -1) for the next piece display
     rotationStates: Vector2[][]
     letterState: LetterState
 }

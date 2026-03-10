@@ -2,8 +2,10 @@
     import { LetterState, Vector2 } from './types'
     import { Tetromino } from './tetrominos'
 
+    defineExpose({ update })
+
     const board = $ref(
-        Array.from({ length: 4 }, () =>
+        Array.from({ length: 2 }, () =>
             Array.from({ length: 4 }, () => ({
                 letter: '',
                 state: LetterState.INITIAL
@@ -12,26 +14,25 @@
     )
 
     function update(tetromino: Tetromino) {
-        board = Array.from({ length: 4 }, () =>
-            Array.from({ length: 4 }, () => ({
-                letter: '',
-                state: LetterState.INITIAL
-            }))
-        )
+        for (let i = 0; i < board.length; i++) {
+            for (let j = 0; j < board[i].length; j++) {
+                board[i][j].state = LetterState.INITIAL
+            }
+        }
 
         const position = tetromino.getTruePosition()
         for (let i = 0; i < position.length; i++) {
-            board[position[i].x][position[i].y] = tetromino.letterState
+            board[position[i].y][position[i].x].state = tetromino.letterState
         }
     }
 </script>
 
 <template>
-    <div>
+    <div id="container">
         <div id="board">
             <div v-for="(row, index) in board" class="row">
                 <div v-for="(tile, index) in row"
-                     :class="['tile', (tile.state && tile.state !== 0) && 'revealed']">
+                     :class="['tile', tile.letter && 'filled', (tile.state && tile.state !== 0) && 'revealed']">
                     <div :class="['front']">
                         {{ tile.letter }}
                     </div>
@@ -45,13 +46,16 @@
 </template>
 
 <style scoped>
+    #container {
+        aspect-ratio:1/1;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    }
     #board {
         display: grid;
-        grid-template-rows: repeat(4, 1fr);
-        padding: 10px;
+        grid-template-rows: repeat(2, 1fr);
         box-sizing: border-box;
-        height: 120px;
-        margin: 0px auto;
     }
     .row {
         display: grid;
@@ -59,7 +63,7 @@
     }
     .tile {
         margin: 0.1rem;
-        height: 2rem;
+        height: 1.5rem;
         aspect-ratio: 1/1;
         font-size: 2rem;
         line-height: 2rem;
@@ -86,9 +90,6 @@
         transition: transform 0.3s;
         backface-visibility: hidden;
         -webkit-backface-visibility: hidden;
-    }
-    .tile .front {
-        border: 2px solid #d3d6da;
     }
     .tile .disabled {
         border-color: #e6e6e6 !important;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onUnmounted, useTemplateRef } from 'vue'
+import { onUnmounted, defineExpose, ref } from 'vue'
 import { getRandomWords, allWords } from './words'
 import WordleBoard from './WordleBoard.vue'
 import TetrisBoard from './TetrisBoard.vue'
@@ -17,7 +17,8 @@ let score = $ref(0);
 let tetrisLevel = $ref(0);
 let tetrisLines = $ref(0);
 
-const tetrominoDisplay: TetrisPieceDisplay = useTemplateRef('tetromino-display')
+const tetrominoDisplay: TetrisPieceDisplay = ref(null)
+
 
 function onWordleTurnFinished(id: number, state: TurnState, scoreCost: number) {
     score += scoreCost
@@ -34,11 +35,12 @@ function onTetrisTurnFinished(state: TurnState, scoreAdded: number, level: numbe
     score += scoreAdded
     tetrisLevel = level
     tetrisLines = lines
-    tetrominoDisplay.update(upcomingTetromino)
+    tetrominoDisplay.value.update(upcomingTetromino)
 }
 
 function setFirstTetromino(firstTetromino: Tetromino) {
-    tetrominoDisplay.update(firstTetromino)
+    console.log(tetrominoDisplay)
+    tetrominoDisplay.value.update(firstTetromino)
 }
 
 
@@ -68,8 +70,8 @@ function setFirstTetromino(firstTetromino: Tetromino) {
             <div class="infoDisplay">
                 <b>LINES:<br />{{tetrisLines}}</b>
             </div>
-            <div class="infoDisplay">
-                <TetrisPieceDisplay v-if="tetrisPhase" ref="tetromino-display" />
+            <div class="infoDisplay noPadding">
+                <TetrisPieceDisplay v-if="tetrisPhase" ref="tetrominoDisplay" />
             </div>
         </div>
     </div>
@@ -90,5 +92,8 @@ function setFirstTetromino(firstTetromino: Tetromino) {
         padding: 0.5rem;
         margin-top: 2rem;
         border-radius: 5px;
+    }
+    .noPadding {
+        padding: 0px !important;
     }
 </style>
