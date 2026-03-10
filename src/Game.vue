@@ -6,7 +6,7 @@ import TetrisBoard from './TetrisBoard.vue'
 import { LetterState, TurnState, GameStates } from './types'
 
 let currentPlayer: number = $ref(0)
-let blockData: LetterState[]
+let blockData: LetterState[] = $ref([])
 let answers: string[] = $ref(getRandomWords())
 let player0Done = false
 let player1Done = false
@@ -15,7 +15,6 @@ let tetrisPhase = $ref(false)
 let score = $ref(0);
 let tetrisLevel = $ref(0);
 let tetrisLines = $ref(0);
-
 
 function onWordleTurnFinished(id: number, state: TurnState, scoreCost: number) {
     score += scoreCost
@@ -26,7 +25,10 @@ function onWordleTurnFinished(id: number, state: TurnState, scoreCost: number) {
     }
     else if (!player0Done) currentPlayer = 0
 
-    else tetrisPhase = true
+    else {
+        console.log(blockData)
+        tetrisPhase = true
+    }
     
 }
 

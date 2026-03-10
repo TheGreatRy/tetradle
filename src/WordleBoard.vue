@@ -12,7 +12,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-    (e: 'onWordleTurnFinished', id: number, state: TurnState, scoreCost: number): void
+    (e: 'turnFinished', id: number, state: TurnState, scoreCost: number): void
 }>()
 
 // Scoring values - correct, present, absent
@@ -127,16 +127,17 @@ function completeRow() {
         if (currentRow.every((tile) => tile.state === LetterState.CORRECT)) {
             // yay!
             let checkRow = currentRowIndex
-            for (let i = 0; i < currentRowIndex * 5; i++)
+            for (let i = 0; i < (currentRowIndex + 1) * 5; i++)
             {
                 if (checkRow != currentRowIndex && i % 5 == 0)
                 {
                     checkRow--
                 }
-                dataArray[i] = board[checkRow][i % 5].state
+                props.dataArray[i] = board[checkRow][i % 5].state
 
                 console.log("added block to data!")
             }
+            console.log(props.dataArray)
             setTimeout(() => {
                 grid = genResultGrid()
                 showMessage(
