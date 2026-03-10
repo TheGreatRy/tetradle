@@ -4,6 +4,11 @@ body {
     margin: 0px auto;
     justify-items: center;
     display: flex;
+    height: 100%;
+}
+
+html {
+    height:100%;
 }
 
 h1 {
@@ -36,32 +41,51 @@ header {
 .absent,
 .correct-disabled,
 .present-disabled,
-.absent-disabled {
+.absent-disabled,
+.tetromino {
     color: #fff !important;
 }
 
-.correct {
+.correct,
+.tetrominoI {
     background-color: #6aaa64 !important;
 }
 
-.present {
+.present,
+.tetrominoS {
     background-color: #c9b458 !important;
 }
 
-.absent {
+.absent,
+.tetrominoL {
     background-color: #787c7e !important;
 }
 
-.correct-disabled {
+.correct-disabled,
+.tetrominoZ {
     background-color: #9ddd97 !important;
 }
 
-.present-disabled {
+.present-disabled,
+.tetrominoT {
     background-color: #fce78b !important;
 }
 
-.absent-disabled {
+.absent-disabled,
+.tetrominoZ {
     background-color: #abafb1 !important;
+}
+
+.tetrominoO {
+    background-color: #dee2e4 !important;
+}
+
+.correct-tetris {
+    background-color: #5c8258 !important;
+}
+
+.present-tetris {
+    background-color: #827a58 !important;
 }
 
 .unguessed-disabled {
