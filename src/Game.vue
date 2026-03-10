@@ -3,13 +3,13 @@ import { onUnmounted } from 'vue'
 import { getRandomWords, allWords } from './words'
 import WordleBoard from './WordleBoard.vue'
 import TetrisBoard from './TetrisBoard.vue'
-import { LetterState, TurnState } from './types'
+import { LetterState, TurnState, GameStates } from './types'
 
 let currentPlayer: number = $ref(0)
 let answers: string[] = $ref(getRandomWords())
 let player0Done = false
 let player1Done = false
-let tetrisPhase = true
+let tetrisPhase = $ref(false)
 
 let score = $ref(0);
 let tetrisLevel = $ref(0);
@@ -23,6 +23,9 @@ function onWordleTurnFinished(id: number, state: TurnState, scoreCost: number) {
         if (!player1Done) currentPlayer = 1
     }
     else if (!player0Done) currentPlayer = 0
+
+    else tetrisPhase = true
+    
 }
 
 function onTetrisTurnFinished(state: TurnState, scoreAdded: number, level: number, lines: number ) {
@@ -37,13 +40,14 @@ function onTetrisTurnFinished(state: TurnState, scoreAdded: number, level: numbe
     <header>
         <h1>TETRADLE</h1>
         <a id="source-link"
-           href="https://github.com/yyx990803/vue-wordle"
+           href="https://github.com/TheGreatRy/tetradle"
            target="_blank">
             Source
         </a>
     </header>
     <div id="gameContainer">
         <div class="sidebar" id="symmetry my friend" />
+        
         <WordleBoard v-if="!tetrisPhase" @turnFinished="onWordleTurnFinished" :id="0" :active="currentPlayer == 0" :answer="answers[0]" />
         <WordleBoard v-if="!tetrisPhase" @turnFinished="onWordleTurnFinished" :id="1" :active="currentPlayer == 1" :answer="answers[1]" />
         <TetrisBoard v-if="tetrisPhase" @turnFinished="onTetrisTurnFinished" :player="currentPlayer" />

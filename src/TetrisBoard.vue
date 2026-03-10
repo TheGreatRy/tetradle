@@ -54,10 +54,10 @@ function onKey(key: string) {
     }
 }
 
-function tick() {
-    setTimeout(() => {
-        tick()
-    }, getTickTime())
+    function tick() {
+        setTimeout(() => {
+            tick()
+        }, getTickTime())
 }
 
 function moveLeft() {

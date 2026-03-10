@@ -11,7 +11,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-    (e: 'turnFinished', id: number, state: TurnState, letters: LetterState[]): void
+    (e: 'onWordleTurnFinished', id: number, state: TurnState, scoreCost: number): void
 }>()
 
 // Scoring values - correct, present, absent
