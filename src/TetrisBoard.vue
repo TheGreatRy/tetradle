@@ -8,7 +8,8 @@
     }>()
 
     const emit = defineEmits<{
-        (e: 'turnFinished', state: TurnState, scoreAdded: number, level: number, lines: number): void
+        (e: 'turnFinished', state: TurnState, scoreAdded: number, level: number, lines: number, upcomingTetromino: Tetromino): void,
+        (e: 'setFirstTetromino', firstTetromino: Tetromino): void
     }>()
 
 
@@ -45,7 +46,10 @@
         window.removeEventListener('keyup', onKeyup)
     })
 
-    onMounted(() => tick())
+    onMounted(() => {
+        emit('setFirstTetromino', upcomingTetromino)
+        tick()
+    })
 
     function onKey(e: KeyboardEvent) {
         const key = e.key
@@ -129,14 +133,14 @@
 
     function endTurn() {
         clearLines()
-        emit('turnFinished', TurnState.CONTINUE, turnPoints, level, lines)
 
         setTimeout(() => {
             turnDelay = 0
-            turnPoints = 0
             currentTetromino = upcomingTetromino
             currentTetromino.currentPos = new Vector2(4, 0)
             upcomingTetromino = getRandomTetromino()
+            emit('turnFinished', TurnState.CONTINUE, turnPoints, level, lines, upcomingTetromino)
+            turnPoints = 0
             allowInput = true
         }, turnDelay * 0.9)
     }

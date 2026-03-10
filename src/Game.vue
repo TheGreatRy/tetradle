@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { onUnmounted } from 'vue'
+import { onUnmounted, useTemplateRef } from 'vue'
 import { getRandomWords, allWords } from './words'
 import WordleBoard from './WordleBoard.vue'
 import TetrisBoard from './TetrisBoard.vue'
+import TetrisPieceDisplay from './TetrisPieceDisplay.vue'
 import { LetterState, TurnState } from './types'
+import { Tetromino, getRandomTetromino } from './tetrominos'
 
 let currentPlayer: number = $ref(0)
 let answers: string[] = $ref(getRandomWords())
@@ -15,6 +17,8 @@ let score = $ref(0);
 let tetrisLevel = $ref(0);
 let tetrisLines = $ref(0);
 
+const tetrominoDisplay: TetrisPieceDisplay = useTemplateRef('tetromino-display')
+
 function onWordleTurnFinished(id: number, state: TurnState, scoreCost: number) {
     score += scoreCost
 
@@ -25,12 +29,18 @@ function onWordleTurnFinished(id: number, state: TurnState, scoreCost: number) {
     else if (!player0Done) currentPlayer = 0
 }
 
-function onTetrisTurnFinished(state: TurnState, scoreAdded: number, level: number, lines: number ) {
+function onTetrisTurnFinished(state: TurnState, scoreAdded: number, level: number, lines: number, upcomingTetromino: Tetromino ) {
     currentPlayer = currentPlayer == 0 ? 1 : 0
     score += scoreAdded
     tetrisLevel = level
     tetrisLines = lines
+    tetrominoDisplay.update(upcomingTetromino)
 }
+
+function setFirstTetromino(firstTetromino: Tetromino) {
+    tetrominoDisplay.update(firstTetromino)
+}
+
 
 </script>
 
@@ -47,7 +57,7 @@ function onTetrisTurnFinished(state: TurnState, scoreAdded: number, level: numbe
         <div class="sidebar" id="symmetry my friend" />
         <WordleBoard v-if="!tetrisPhase" @turnFinished="onWordleTurnFinished" :id="0" :active="currentPlayer == 0" :answer="answers[0]" />
         <WordleBoard v-if="!tetrisPhase" @turnFinished="onWordleTurnFinished" :id="1" :active="currentPlayer == 1" :answer="answers[1]" />
-        <TetrisBoard v-if="tetrisPhase" @turnFinished="onTetrisTurnFinished" :player="currentPlayer" />
+        <TetrisBoard v-if="tetrisPhase" @setFirstTetromino="setFirstTetromino" @turnFinished="onTetrisTurnFinished" :player="currentPlayer" />
         <div class="sidebar">
             <div class="infoDisplay">
                 <b>SCORE:<br />{{score}}</b>
@@ -57,6 +67,9 @@ function onTetrisTurnFinished(state: TurnState, scoreAdded: number, level: numbe
             </div>
             <div class="infoDisplay">
                 <b>LINES:<br />{{tetrisLines}}</b>
+            </div>
+            <div class="infoDisplay">
+                <TetrisPieceDisplay v-if="tetrisPhase" ref="tetromino-display" />
             </div>
         </div>
     </div>
