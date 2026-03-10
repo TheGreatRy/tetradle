@@ -1,4 +1,4 @@
-export const enum LetterState {
+export enum LetterState {
     INITIAL = 0,
     CORRECT = 'correct',
     PRESENT = 'present',

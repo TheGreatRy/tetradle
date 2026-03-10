@@ -1,6 +1,6 @@
-import { Vector2 } from "./types"
+import { LetterState, Vector2 } from "./types"
 
-export function getRandomTetronimo()
+export function getRandomTetromino()
 {
     const keys = Object.keys(tetrominoStates)
 
@@ -11,9 +11,10 @@ export function getRandomTetronimo()
 export class Tetromino {
     constructor(type: string) {
         this.rotationStates = tetrominoStates[type]
+        this.letterState = Object.values(LetterState)[Object.values(LetterState).indexOf(type)] as LetterState
     }
 
-    getNextRotation() {
+    getPosIfRotated() {
         const rotationIndex = this.currentRotationState + 1 < this.rotationStates.length ? this.currentRotationState + 1 : 0
         const rotationState = this.rotationStates[rotationIndex]
         return this.getTruePosition(rotationState)
@@ -41,42 +42,43 @@ export class Tetromino {
     }
 
     currentRotationState: number = 0
-    currentPos: Vector2 = new Vector2(1, 1) // (4, 18) starting pos for tetris board, instantiates at (1, 1) for the next piece display
-    rotationStates: Vector2[][] = $ref([])
+    currentPos: Vector2 = new Vector2(1, -1) // (4, -18) starting pos for tetris board, instantiates at (1, -1) for the next piece display
+    rotationStates: Vector2[][]
+    letterState: LetterState
 }
 
-export const tetrominoStates: Record<string, Vector2[][]> = {
+const tetrominoStates: Record<string, Vector2[][]> = {
     tetrominoI: [
-        [new Vector2(-1, 0), new Vector2(0, 0), new Vector2(1, 0), new Vector2(2, 0)],
-        [new Vector2(0, 2), new Vector2(0, 1), new Vector2(0, 0), new Vector2(0, -1)]
+        [ new Vector2(-1, 0), new Vector2(0, 0), new Vector2(1, 0), new Vector2(2, 0) ],
+        [ new Vector2(0, -2), new Vector2(0, -1), new Vector2(0, 0), new Vector2(0, 1) ]
     ],
     tetrominoJ: [
-        [ new Vector2(-1, 0), new Vector2(0, 0), new Vector2(1, 0), new Vector2(1, -1) ],
-        [ new Vector2(0, 1), new Vector2(1, 1), new Vector2(0, 0), new Vector2(0, -1) ],
-        [ new Vector2(-1, 1), new Vector2(-1, 0), new Vector2(0, 0), new Vector2(1, 0) ],
-        [ new Vector2(0, 1), new Vector2(0, 0), new Vector2(-1, -1), new Vector2(0, -1) ]
+        [ new Vector2(-1, 0), new Vector2(0, 0), new Vector2(1, 0), new Vector2(1, 1) ],
+        [ new Vector2(0, -1), new Vector2(1, -1), new Vector2(0, 0), new Vector2(0, 1) ],
+        [ new Vector2(-1, -1), new Vector2(-1, 0), new Vector2(0, 0), new Vector2(1, 0) ],
+        [ new Vector2(0, -1), new Vector2(0, 0), new Vector2(-1, 1), new Vector2(0, 1) ]
     ],
     tetrominoL: [
-        [new Vector2(-1, 0), new Vector2(0, 0), new Vector2(1, 0), new Vector2(-1, -1)],
-        [new Vector2(0, 1), new Vector2(0, 0), new Vector2(0, -1), new Vector2(1, -1)],
-        [new Vector2(1, 1), new Vector2(-1, 0), new Vector2(0, 0), new Vector2(1, 0)],
-        [new Vector2(-1, 1), new Vector2(0, 1), new Vector2(0, 0), new Vector2(0, -1)]
+        [new Vector2(-1, 0), new Vector2(0, 0), new Vector2(1, 0), new Vector2(-1, 1)],
+        [new Vector2(0, -1), new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 1)],
+        [new Vector2(1, -1), new Vector2(-1, 0), new Vector2(0, 0), new Vector2(1, 0)],
+        [new Vector2(-1, -1), new Vector2(0, -1), new Vector2(0, 0), new Vector2(0, 1)]
     ],
     tetrominoO: [
-        [ new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, -1), new Vector2(1, -1) ]
+        [ new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, 1), new Vector2(1, 1) ]
     ],
     tetrominoS: [
-        [new Vector2(0, 0), new Vector2(1, 0), new Vector2(-1, -1), new Vector2(0, -1)],
-        [new Vector2(-1, 1), new Vector2(-1, 0), new Vector2(0, 0), new Vector2(0, -1)]
+        [new Vector2(0, 0), new Vector2(1, 0), new Vector2(-1, 1), new Vector2(0, 1)],
+        [new Vector2(-1, -1), new Vector2(-1, 0), new Vector2(0, 0), new Vector2(0, 1)]
     ],
     tetrominoT: [
-        [new Vector2(-1, 0), new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, -1)],
-        [new Vector2(0, 1), new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, -1)],
-        [new Vector2(0, 1), new Vector2(-1, 0), new Vector2(0, 0), new Vector2(1, 0)],
-        [new Vector2(0, 1), new Vector2(-1, 0), new Vector2(0, 0), new Vector2(0, -1)]
+        [new Vector2(-1, 0), new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, 1)],
+        [new Vector2(0, -1), new Vector2(0, 0), new Vector2(1, 0), new Vector2(0, 1)],
+        [new Vector2(0, -1), new Vector2(-1, 0), new Vector2(0, 0), new Vector2(1, 0)],
+        [new Vector2(0, -1), new Vector2(-1, 0), new Vector2(0, 0), new Vector2(0, 1)]
     ],
     tetrominoZ: [
-        [new Vector2(-1, 0), new Vector2(0, 0), new Vector2(0, -1), new Vector2(1, -1)],
-        [new Vector2(0, 1), new Vector2(-1, 0), new Vector2(0, 0), new Vector2(-1, -1)]
+        [new Vector2(-1, 0), new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 1)],
+        [new Vector2(0, -1), new Vector2(-1, 0), new Vector2(0, 0), new Vector2(-1, 1)]
     ]
 }

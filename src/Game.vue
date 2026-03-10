@@ -26,6 +26,7 @@ function onWordleTurnFinished(id: number, state: TurnState, scoreCost: number) {
 }
 
 function onTetrisTurnFinished(state: TurnState, scoreAdded: number, level: number, lines: number ) {
+    currentPlayer = currentPlayer == 0 ? 1 : 0
     score += scoreAdded
     tetrisLevel = level
     tetrisLines = lines
