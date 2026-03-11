@@ -11,7 +11,7 @@ let currentPlayer: number = $ref(0)
 let answers: string[] = $ref(getRandomWords())
 let player0Done = false
 let player1Done = false
-let tetrisPhase = true
+let tetrisPhase = false
 
 let score = $ref(0);
 let tetrisLevel = $ref(0);
@@ -64,14 +64,14 @@ function setFirstTetromino(firstTetromino: Tetromino) {
             <div class="infoDisplay">
                 <b>SCORE:<br />{{score}}</b>
             </div>
-            <div class="infoDisplay">
+            <div v-if="tetrisPhase" class="infoDisplay">
                 <b>LEVEL:<br />{{tetrisLevel}}</b>
             </div>
-            <div class="infoDisplay">
+            <div v-if="tetrisPhase" class="infoDisplay">
                 <b>LINES:<br />{{tetrisLines}}</b>
             </div>
-            <div class="infoDisplay noPadding">
-                <TetrisPieceDisplay v-if="tetrisPhase" ref="tetrominoDisplay" />
+            <div v-if="tetrisPhase" class="infoDisplay noPadding">
+                <TetrisPieceDisplay ref="tetrominoDisplay" />
             </div>
         </div>
     </div>
