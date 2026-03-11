@@ -149,7 +149,7 @@
             const truePos = currentTetromino.getTruePosition()
 
             for (let i = 0; i < truePos.length; i++) {
-                if (resultingPos[i].y >= 0 && board[truePos[i].y][truePos[i].x].state !== LetterState.INITIAL) {
+                if (truePos[i].y >= 0 && board[truePos[i].y][truePos[i].x].state !== LetterState.INITIAL) {
                     lost = true
                     break
                 }
