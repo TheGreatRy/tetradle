@@ -9,6 +9,7 @@ import { Tetromino, getRandomTetromino } from './tetrominos'
 
 let currentPlayer: number = $ref(0)
 let answers: string[] = $ref(getRandomWords())
+let tileData: Tile[] = $ref([])
 let player0Done = false
 let player1Done = false
 let tetrisPhase = false
@@ -57,8 +58,8 @@ function setFirstTetromino(firstTetromino: Tetromino) {
     </header>
     <div id="gameContainer">
         <div class="sidebar" id="symmetry my friend" />
-        <WordleBoard v-if="!tetrisPhase" @turnFinished="onWordleTurnFinished" :id="0" :active="currentPlayer == 0" :answer="answers[0]" />
-        <WordleBoard v-if="!tetrisPhase" @turnFinished="onWordleTurnFinished" :id="1" :active="currentPlayer == 1" :answer="answers[1]" />
+        <WordleBoard v-if="!tetrisPhase" @turnFinished="onWordleTurnFinished" :id="0" :active="currentPlayer == 0" :answer="answers[0]" :dataArray="tileData"/>
+        <WordleBoard v-if="!tetrisPhase" @turnFinished="onWordleTurnFinished" :id="1" :active="currentPlayer == 1" :answer="answers[1]" :dataArray="tileData"/>
         <TetrisBoard v-if="tetrisPhase" @setFirstTetromino="setFirstTetromino" @turnFinished="onTetrisTurnFinished" :player="currentPlayer" :wordleAnswers="answers"/>
         <div class="sidebar">
             <div class="infoDisplay">
