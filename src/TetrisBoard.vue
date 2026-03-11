@@ -3,16 +3,19 @@
     import { allWords, letters } from './words'
     import { LetterState, TurnState, Vector2 } from './types'
     import { getRandomTetromino, Tetromino } from './tetrominos'
+    import {Tile } from './tile'
+
+    defineExpose({initializeBoard})
 
     const props = defineProps<{
         player: number,
-        wordleAnswers: string[]
+        wordleAnswers: string[],
+        dataArray: Tile[]
     }>()
 
     const emit = defineEmits<{
         (e: 'turnFinished', state: TurnState, scoreAdded: number, level: number, lines: number, upcomingTetromino: Tetromino): void,
-        (e: 'setFirstTetromino', firstTetromino: Tetromino): void,
-        (e: 'initializeBoard', dataArray: Tile[])
+        (e: 'setFirstTetromino', firstTetromino: Tetromino): void
     }>()
 
 
@@ -36,10 +39,9 @@
     // Board state. Each tile is represented as { letter, state }
     const board = $ref(
         Array.from({ length: 20 }, () =>
-            Array.from({ length: 10 }, () => ({
-                letter: '',
-                state: LetterState.INITIAL
-            }))
+            Array.from({ length: 10 }, () =>
+                new Tile('', LetterState.INITIAL)
+            )
         )
     )
 
@@ -53,8 +55,27 @@
 
     onMounted(() => {
         emit('setFirstTetromino', upcomingTetromino)
+        initializeBoard()
         tick()
     })
+
+    function initializeBoard()
+    {
+        //row amount
+        let r = (props.dataArray.length / 10)
+
+        //last row up
+        let j = 19 - r + 1 //18 + 1
+
+        //iter from 19 -> j
+
+        console.log(props.dataArray)
+        for (let i = 0; i < props.dataArray.length; i++) {
+            if (i != 0 && i % 10 == 0) r--
+            board[j][i % 10] = props.dataArray[i]
+            console.log(board[j][i % 10])
+        }
+    }
 
     function onKey(e: KeyboardEvent) {
         const key = e.key
@@ -149,7 +170,7 @@
             const truePos = currentTetromino.getTruePosition()
 
             for (let i = 0; i < truePos.length; i++) {
-                if (resultingPos[i].y >= 0 && board[truePos[i].y][truePos[i].x].state !== LetterState.INITIAL) {
+                if (truePos[i].y >= 0 && board[truePos[i].y][truePos[i].x].state !== LetterState.INITIAL) {
                     lost = true
                     break
                 }
@@ -211,7 +232,7 @@
         for (let i = linesCleared.length - 1; i >= 0; i--) {
             for (let j = 0; j < board[i].length; j++) {
                 board[linesCleared[i]][j].state = LetterState.INITIAL
-                board[linesCleared[i]][j].letter = ""
+                board[linesCleared[i]][j].character = ""
             }
         }
 
@@ -220,13 +241,13 @@
                 for (let j = linesCleared[i]; j >= 1; j--) {
                     for (let k = 0; k < board[j].length; k++) {
                         board[j][k].state = board[j - 1][k].state
-                        board[j][k].letter = board[j - 1][k].letter
+                        board[j][k].character = board[j - 1][k].character
                     }
                 }
             }
             for (let j = 0; j < board[0].length; j++) {
                 board[0][j].state = LetterState.INITIAL
-                board[0][j].letter = ""
+                board[0][j].character = ""
             }
         }, turnDelay * 0.8)
     }
@@ -244,7 +265,7 @@
 
     function eraseLetters(pos: Vector2[]) {
         for (let i = 0; i < pos.length; i++) {
-            if (pos[i].y >= 0) board[pos[i].y][pos[i].x].letter = ""
+            if (pos[i].y >= 0) board[pos[i].y][pos[i].x].character = ""
         }
     }
 
@@ -252,27 +273,27 @@
         for (let i = 0; i < pos.length; i++) {
             if (pos[i].y >= 0) {
                 board[pos[i].y][pos[i].x].state = letterState
-                if (letterState !== LetterState.INITIAL && board[pos[i].y][pos[i].x].letter == "") {
+                if (letterState !== LetterState.INITIAL && board[pos[i].y][pos[i].x].character == "") {
                     const sourceString = (pos[i].x > 4) ? props.wordleAnswers[1] : props.wordleAnswers[0]
                     switch (letterState) {
                         case LetterState.CORRECT:
                         case LetterState.TETROMINO_I:
                         case LetterState.TETROMINO_J:
-                            board[pos[i].y][pos[i].x].letter = sourceString[pos[i].x % 5]
+                            board[pos[i].y][pos[i].x].character = sourceString[pos[i].x % 5]
                             break
                         case LetterState.PRESENT:
                         case LetterState.TETROMINO_S:
                         case LetterState.TETROMINO_T:
                             const letterAtPlace = sourceString[pos[i].x % 5]
                             const operatingString = sourceString.replaceAll(letterAtPlace, "")
-                            board[pos[i].y][pos[i].x].letter = operatingString[Math.floor(Math.random() * (operatingString.length))]
+                            board[pos[i].y][pos[i].x].character = operatingString[Math.floor(Math.random() * (operatingString.length))]
                             break
                         default:
                             let absentLetters = letters
                             for (let i = 0; i < sourceString.length; i++) {
                                 absentLetters = absentLetters.filter((l) => l != sourceString[i])
                             }
-                            board[pos[i].y][pos[i].x].letter = absentLetters[Math.floor(Math.random() * (absentLetters.length))]
+                            board[pos[i].y][pos[i].x].character = absentLetters[Math.floor(Math.random() * (absentLetters.length))]
                     }
                 }
             }
@@ -296,14 +317,14 @@
         <div id="board">
             <div v-for="(row, index) in board" class="row">
                 <div v-for="(tile, index) in row"
-                    :class="['tile', tile.letter && 'filled', (tile.state && tile.state !== 0) && 'revealed']"
+                    :class="['tile', tile.character && 'filled', (tile.state && tile.state !== 0) && 'revealed']"
                 >
                     <div :class="['front']">
-                        {{ tile.letter }}
+                        {{ tile.character }}
                     </div>
                     <div :class="['back', tile.state + ((tile.state === 'correct' || tile.state === 'present' || tile.state === 'absent') ? '-tetris' : '')]"
                     >
-                        {{ tile.letter }}
+                        {{ tile.character }}
                     </div>
                 </div>
             </div>
