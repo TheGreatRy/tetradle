@@ -103,7 +103,7 @@
         let canRotate = true
         draw(currentPos)
         for (let i = 0; i < resultingPos.length; i++) {
-            if (resultingPos[i].x < 0 || resultingPos[i].x >= 10 || resultingPos[i].y >= 20 || board[resultingPos[i].y][resultingPos[i].x].state !== LetterState.INITIAL) {
+            if (resultingPos[i].x < 0 || resultingPos[i].x >= 10 || resultingPos[i].y >= 20 || (resultingPos[i].y >= 0 && board[resultingPos[i].y][resultingPos[i].x].state !== LetterState.INITIAL)) {
                 canRotate = false
                 break
             }
@@ -244,7 +244,7 @@
 
     function eraseLetters(pos: Vector2[]) {
         for (let i = 0; i < pos.length; i++) {
-            board[pos[i].y][pos[i].x].letter = ""
+            if (pos[i].y >= 0) board[pos[i].y][pos[i].x].letter = ""
         }
     }
 
