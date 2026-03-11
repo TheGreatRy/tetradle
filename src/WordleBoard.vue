@@ -3,12 +3,13 @@ import { onUnmounted } from 'vue'
 import { getWordOfTheDay, allWords } from './words'
 import Keyboard from './Keyboard.vue'
 import { LetterState, TurnState } from './types'
+import {Tile } from './tile'
 
 const props = defineProps<{
     active: boolean,
     id: number,
     answer: string,
-    dataArray: LetterState[]
+    dataArray: Tile[]
 }>()
 
 const emit = defineEmits<{
@@ -21,13 +22,12 @@ const pointValues = [-10, -20, -30]
 // Handle keyboard input.
 let allowInput = true
 
-// Board state. Each tile is represented as { letter, state }
+// Board state. Each tile is represented as a Tile { character, state }
 const board = $ref(
     Array.from({ length: 6 }, () =>
-        Array.from({ length: 5 }, () => ({
-            letter: '',
-            state: LetterState.INITIAL
-        }))
+        Array.from({ length: 5 }, () => (
+            new Tile('', LetterState.INITIAL)
+        ))
     )
 )
 
@@ -63,10 +63,10 @@ function onKey(key: string) {
     }
 }
 
-function fillTile(letter: string) {
+function fillTile(char: string) {
     for (const tile of currentRow) {
-        if (!tile.letter) {
-            tile.letter = letter
+        if (!tile.character) {
+            tile.character = char
         break
         }
     }
@@ -74,16 +74,16 @@ function fillTile(letter: string) {
 
 function clearTile() {
     for (const tile of [...currentRow].reverse()) {
-        if (tile.letter) {
-            tile.letter = ''
+        if (tile.character) {
+            tile.character = ''
             break
         }
     }
 }
 
 function completeRow() {
-    if (currentRow.every((tile) => tile.letter)) {
-        const guess = currentRow.map((tile) => tile.letter).join('')
+    if (currentRow.every((tile) => tile.character)) {
+        const guess = currentRow.map((tile) => tile.character).join('')
         if (!allWords.includes(guess) && guess !== props.answer) {
             shake()
             showMessage(`You Definitely Need Autocorrect`)
@@ -94,20 +94,20 @@ function completeRow() {
         let scoreCost = 0
         // first pass: mark correct ones
         currentRow.forEach((tile, i) => {
-            if (answerLetters[i] === tile.letter) {
-                tile.state = letterStates[tile.letter] = LetterState.CORRECT
+            if (answerLetters[i] === tile.character) {
+                tile.state = letterStates[tile.character] = LetterState.CORRECT
                 scoreCost += pointValues[0]
                 answerLetters[i] = null
             }
         })
         // second pass: mark the present
         currentRow.forEach((tile) => {
-            if (!tile.state && answerLetters.includes(tile.letter)) {
+            if (!tile.state && answerLetters.includes(tile.character)) {
                 tile.state = LetterState.PRESENT
                 scoreCost += pointValues[1]
-                answerLetters[answerLetters.indexOf(tile.letter)] = null
-                if (!letterStates[tile.letter]) {
-                    letterStates[tile.letter] = LetterState.PRESENT
+                answerLetters[answerLetters.indexOf(tile.character)] = null
+                if (!letterStates[tile.character]) {
+                    letterStates[tile.character] = LetterState.PRESENT
                 }
             }
         })
@@ -116,8 +116,8 @@ function completeRow() {
             if (!tile.state) {
                 tile.state = LetterState.ABSENT
                 scoreCost += pointValues[2]
-                if (!letterStates[tile.letter]) {
-                    letterStates[tile.letter] = LetterState.ABSENT
+                if (!letterStates[tile.character]) {
+                    letterStates[tile.character] = LetterState.ABSENT
                 }
             }
         })
@@ -126,16 +126,16 @@ function completeRow() {
         allowInput = false
         if (currentRow.every((tile) => tile.state === LetterState.CORRECT)) {
             // yay!
-            let checkRow = currentRowIndex
-            for (let i = 0; i < (currentRowIndex + 1) * 5; i++)
+            for (let i = 0, j = currentRowIndex; i < (currentRowIndex + 1) * 5; i++)
             {
-                if (checkRow != currentRowIndex && i % 5 == 0)
+                console.log(j)
+                if (i != 0 && i % 5 == 0)
                 {
-                    checkRow--
+                    j--
                 }
-                props.dataArray[i] = board[checkRow][i % 5].state
+                props.dataArray[i] = new Tile(board[j][i % 5].character, board[j][i % 5].state);
 
-                console.log("added block to data!")
+                console.log("added tile to data!")
             }
             console.log(props.dataArray)
             setTimeout(() => {
@@ -214,10 +214,10 @@ function genResultGrid() {
                     success && currentRowIndex === index && 'jump'
                 ]">
                 <div v-for="(tile, index) in row"
-                    :class="['tile', tile.letter && 'filled', tile.state && 'revealed']"
+                    :class="['tile', tile.character && 'filled', tile.state && 'revealed']"
                 >
                     <div :class="['front', !props.active && 'disabled']" :style="{ transitionDelay: `${index * 300}ms` }">
-                        {{ tile.letter }}
+                        {{ tile.character }}
                     </div>
                     <div :class="['back', tile.state + (props.active ? '' : '-disabled')]"
                         :style="{
@@ -225,7 +225,7 @@ function genResultGrid() {
                             animationDelay: `${index * 100}ms`
                         }"
                     >
-                        {{ tile.letter }}
+                        {{ tile.character }}
                     </div>
                 </div>
             </div>

@@ -6,7 +6,7 @@
     import { LetterState, TurnState, GameStates } from './types'
 
     let currentPlayer: number = $ref(0)
-    let blockData: LetterState[] = $ref([])
+    let tileData: Tile[] = $ref([])
     let answers: string[] = $ref(getRandomWords())
     let player0Done = false
     let player1Done = false
@@ -26,7 +26,6 @@
         else if (!player0Done) currentPlayer = 0
 
         else {
-            console.log(blockData)
             tetrisPhase = true
         }
     
@@ -51,9 +50,9 @@
     <div id="gameContainer">
         <div class="sidebar" id="symmetry my friend" />
         
-        <WordleBoard v-if="!tetrisPhase" @turnFinished="onWordleTurnFinished" :id="0" :active="currentPlayer == 0" :answer="answers[0]" :dataArray="blockData" />
-        <WordleBoard v-if="!tetrisPhase" @turnFinished="onWordleTurnFinished" :id="1" :active="currentPlayer == 1" :answer="answers[1]" :dataArray="blockData" />
-        <TetrisBoard v-if="tetrisPhase" @turnFinished="onTetrisTurnFinished" :player="currentPlayer" :dataArray="blockData" />
+        <WordleBoard v-if="!tetrisPhase" @turnFinished="onWordleTurnFinished" :id="0" :active="currentPlayer == 0" :answer="answers[0]" :dataArray="tileData" />
+        <WordleBoard v-if="!tetrisPhase" @turnFinished="onWordleTurnFinished" :id="1" :active="currentPlayer == 1" :answer="answers[1]" :dataArray="tileData" />
+        <TetrisBoard v-if="tetrisPhase" @turnFinished="onTetrisTurnFinished" :player="currentPlayer" :dataArray="tileData" />
         <div class="sidebar">
             <div class="infoDisplay">
                 <b>SCORE:<br />{{score}}</b>
