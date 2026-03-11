@@ -9,17 +9,18 @@ import { Tetromino, getRandomTetromino } from './tetrominos'
 
 let currentPlayer: number = $ref(0)
 let answers: string[] = $ref(getRandomWords())
-let tileData: Tile[] = $ref([])
 let player0Done = false
 let player1Done = false
 let tetrisPhase = $ref(false)
+let leftWordle: Tile[] = $ref([])
+let rightWordle: Tile[] = $ref([])
+let tileData: Tile[] = $ref([])
 
-let score = $ref(0);
-let tetrisLevel = $ref(0);
-let tetrisLines = $ref(0);
+let score = $ref(0)
+let tetrisLevel = $ref(0)
+let tetrisLines = $ref(0)
 
 const tetrominoDisplay: TetrisPieceDisplay = ref(null)
-
 
 function onWordleTurnFinished(id: number, state: TurnState, scoreCost: number) {
     score += scoreCost
@@ -30,7 +31,21 @@ function onWordleTurnFinished(id: number, state: TurnState, scoreCost: number) {
     }
     else if (!player0Done) currentPlayer = 0
 
-    else tetrisPhase = true
+    else
+    {
+        let rightIndex = 0
+        for (let i = 0; i < leftWordle.length + rightWordle.length; i++)
+        {
+            if (i < leftWordle.length) tileData[i] = leftWordle[i]
+            else
+            {
+                tileData[i] = rightWordle[rightIndex]
+                rightIndex++
+            }
+        }
+
+        tetrisPhase = true
+    }
 }
 
 function onTetrisTurnFinished(state: TurnState, scoreAdded: number, level: number, lines: number, upcomingTetromino: Tetromino ) {
@@ -46,11 +61,6 @@ function setTetromino(firstTetromino: Tetromino) {
     tetrominoDisplay.value.update(firstTetromino)
 }
 
-function updateFromWordle(tileData: Tile[])
-{
-
-}
-
 </script>
 
 <template>
@@ -64,9 +74,9 @@ function updateFromWordle(tileData: Tile[])
     </header>
     <div id="gameContainer">
         <div class="sidebar" id="symmetry my friend" />
-        <WordleBoard v-if="!tetrisPhase" @turnFinished="onWordleTurnFinished" :id="0" :active="currentPlayer == 0" :answer="answers[0]" :dataArray="tileData"/>
-        <WordleBoard v-if="!tetrisPhase" @turnFinished="onWordleTurnFinished" :id="1" :active="currentPlayer == 1" :answer="answers[1]" :dataArray="tileData"/>
-        <TetrisBoard v-if="tetrisPhase" @setFirstTetromino="setTetromino" @turnFinished="onTetrisTurnFinished" @initializeBoard="updateFromWordle" :player="currentPlayer" :wordleAnswers="answers"/>
+        <WordleBoard v-if="!tetrisPhase" @turnFinished="onWordleTurnFinished" :id="0" :active="currentPlayer == 0" :answer="answers[0]" :dataArray="leftWordle"/>
+        <WordleBoard v-if="!tetrisPhase" @turnFinished="onWordleTurnFinished" :id="1" :active="currentPlayer == 1" :answer="answers[1]" :dataArray="rightWordle"/>
+        <TetrisBoard v-if="tetrisPhase" @setFirstTetromino="setTetromino" @turnFinished="onTetrisTurnFinished" :player="currentPlayer" :wordleAnswers="answers" :dataArray="tileData"/>
         <div class="sidebar">
             <div class="infoDisplay">
                 <b>SCORE:<br />{{score}}</b>
