@@ -128,16 +128,9 @@ function completeRow() {
             // yay!
             for (let i = 0, j = currentRowIndex; i < (currentRowIndex + 1) * 5; i++)
             {
-                console.log(j)
-                if (i != 0 && i % 5 == 0)
-                {
-                    j--
-                }
+                if (i != 0 && i % 5 == 0) j--
                 props.dataArray[i] = new Tile(board[j][i % 5].character, board[j][i % 5].state);
-
-                console.log("added tile to data!")
             }
-            console.log(props.dataArray)
             setTimeout(() => {
                 grid = genResultGrid()
                 showMessage(
