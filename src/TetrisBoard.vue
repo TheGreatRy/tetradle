@@ -11,7 +11,8 @@
 
     const emit = defineEmits<{
         (e: 'turnFinished', state: TurnState, scoreAdded: number, level: number, lines: number, upcomingTetromino: Tetromino): void,
-        (e: 'setFirstTetromino', firstTetromino: Tetromino): void
+        (e: 'setFirstTetromino', firstTetromino: Tetromino): void,
+        (e: 'initializeBoard', dataArray: Tile[])
     }>()
 
 
