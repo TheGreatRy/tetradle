@@ -42,7 +42,13 @@ header {
 .correct-disabled,
 .present-disabled,
 .absent-disabled,
-.tetromino {
+.tetrominoI,
+.tetrominoS,
+.tetrominoL,
+.tetrominoJ,
+.tetrominoT,
+.tetrominoZ,
+.tetrominoO {
     color: #fff !important;
 }
 

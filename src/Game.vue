@@ -59,7 +59,7 @@ function setFirstTetromino(firstTetromino: Tetromino) {
         <div class="sidebar" id="symmetry my friend" />
         <WordleBoard v-if="!tetrisPhase" @turnFinished="onWordleTurnFinished" :id="0" :active="currentPlayer == 0" :answer="answers[0]" />
         <WordleBoard v-if="!tetrisPhase" @turnFinished="onWordleTurnFinished" :id="1" :active="currentPlayer == 1" :answer="answers[1]" />
-        <TetrisBoard v-if="tetrisPhase" @setFirstTetromino="setFirstTetromino" @turnFinished="onTetrisTurnFinished" :player="currentPlayer" />
+        <TetrisBoard v-if="tetrisPhase" @setFirstTetromino="setFirstTetromino" @turnFinished="onTetrisTurnFinished" :player="currentPlayer" :wordleAnswers="answers"/>
         <div class="sidebar">
             <div class="infoDisplay">
                 <b>SCORE:<br />{{score}}</b>

@@ -1,10 +1,12 @@
 <script setup lang="ts">
     import { onUnmounted, onMounted } from 'vue'
+    import { allWords, letters } from './words'
     import { LetterState, TurnState, Vector2 } from './types'
     import { getRandomTetromino, Tetromino } from './tetrominos'
 
     const props = defineProps<{
-        player: number
+        player: number,
+        wordleAnswers: string[]
     }>()
 
     const emit = defineEmits<{
@@ -23,6 +25,8 @@
     let turnPoints = 0
 
     let turnDelay = 0
+
+    let lost = false
 
     let currentTetromino: Tetromino = new getRandomTetromino()
     currentTetromino.currentPos = new Vector2(4, 0)
@@ -71,7 +75,7 @@
     function tick() {
         if (allowInput) dropOne()
         setTimeout(() => {
-            tick()
+            if (!lost) tick()
         }, turnDelay + getTickTime())
     }
 
@@ -87,6 +91,7 @@
                 break
             }
         }
+        if (canMove) eraseLetters(currentPos)
         draw(canMove ? resultingPos : currentPos, currentTetromino.letterState)
         if (canMove) currentTetromino.move(vector)
     }
@@ -102,6 +107,7 @@
                 break
             }
         }
+        if (canRotate) eraseLetters(currentPos)
         draw(canRotate ? resultingPos : currentPos, currentTetromino.letterState)
         if (canRotate) currentTetromino.rotate()
     }
@@ -118,7 +124,7 @@
                 break
             }
         }
-
+        if (canDrop) eraseLetters(currentPos)
         draw(canDrop ? resultingPos : currentPos, currentTetromino.letterState)
 
         if (canDrop) {
@@ -139,9 +145,20 @@
             currentTetromino = upcomingTetromino
             currentTetromino.currentPos = new Vector2(4, 0)
             upcomingTetromino = getRandomTetromino()
-            emit('turnFinished', TurnState.CONTINUE, turnPoints, level, lines, upcomingTetromino)
+            const truePos = currentTetromino.getTruePosition()
+
+            for (let i = 0; i < truePos.length; i++) {
+                if (board[truePos[i].y][truePos[i].x].state !== LetterState.INITIAL) {
+                    lost = true
+                    break
+                }
+            }
+
+            draw(truePos, currentTetromino.letterState)
+
+            emit('turnFinished', lost ? TurnState.LOSS : TurnState.CONTINUE, turnPoints, level, lines, upcomingTetromino)
             turnPoints = 0
-            allowInput = true
+            allowInput = !lost
         }, turnDelay * 0.9)
     }
 
@@ -193,6 +210,7 @@
         for (let i = linesCleared.length - 1; i >= 0; i--) {
             for (let j = 0; j < board[i].length; j++) {
                 board[linesCleared[i]][j].state = LetterState.INITIAL
+                board[linesCleared[i]][j].letter = ""
             }
         }
 
@@ -201,11 +219,13 @@
                 for (let j = linesCleared[i]; j >= 1; j--) {
                     for (let k = 0; k < board[j].length; k++) {
                         board[j][k].state = board[j - 1][k].state
+                        board[j][k].letter = board[j - 1][k].letter
                     }
                 }
             }
             for (let j = 0; j < board[0].length; j++) {
                 board[0][j].state = LetterState.INITIAL
+                board[0][j].letter = ""
             }
         }, turnDelay * 0.8)
     }
@@ -221,10 +241,39 @@
         if (dropOne()) turnPoints++
     }
 
+    function eraseLetters(pos: Vector2[]) {
+        for (let i = 0; i < pos.length; i++) {
+            board[pos[i].y][pos[i].x].letter = ""
+        }
+    }
+
     function draw(pos: Vector2[], letterState: LetterState = LetterState.INITIAL) {
-        for (let i = 0; i < pos.length; i++) { // clear former piece place
-            if (pos[i].y > 0) {
+        for (let i = 0; i < pos.length; i++) {
+            if (pos[i].y >= 0) {
                 board[pos[i].y][pos[i].x].state = letterState
+                if (letterState !== LetterState.INITIAL && board[pos[i].y][pos[i].x].letter == "") {
+                    const sourceString = (pos[i].x > 4) ? props.wordleAnswers[1] : props.wordleAnswers[0]
+                    switch (letterState) {
+                        case LetterState.CORRECT:
+                        case LetterState.TETROMINO_I:
+                        case LetterState.TETROMINO_J:
+                            board[pos[i].y][pos[i].x].letter = sourceString[pos[i].x % 5]
+                            break
+                        case LetterState.PRESENT:
+                        case LetterState.TETROMINO_S:
+                        case LetterState.TETROMINO_T:
+                            const letterAtPlace = sourceString[pos[i].x % 5]
+                            const operatingString = sourceString.replaceAll(letterAtPlace, "")
+                            board[pos[i].y][pos[i].x].letter = operatingString[Math.floor(Math.random() * (operatingString.length))]
+                            break
+                        default:
+                            let absentLetters = letters
+                            for (let i = 0; i < sourceString.length; i++) {
+                                absentLetters = absentLetters.filter((l) => l != sourceString[i])
+                            }
+                            board[pos[i].y][pos[i].x].letter = absentLetters[Math.floor(Math.random() * (absentLetters.length))]
+                    }
+                }
             }
         }
     }
@@ -251,7 +300,7 @@
                     <div :class="['front']">
                         {{ tile.letter }}
                     </div>
-                    <div :class="['back', tile.state]"
+                    <div :class="['back', tile.state + ((tile.state === 'correct' || tile.state === 'present' || tile.state === 'absent') ? '-tetris' : '')]"
                     >
                         {{ tile.letter }}
                     </div>
@@ -278,7 +327,7 @@
         margin: 0.1rem;
         height: 2rem;
         aspect-ratio: 1/1;
-        font-size: 2rem;
+        font-size: 1.5rem;
         line-height: 2rem;
         font-weight: bold;
         vertical-align: middle;
@@ -300,7 +349,6 @@
         left: 0;
         width: 100%;
         height: 100%;
-        transition: transform 0.3s;
         backface-visibility: hidden;
         -webkit-backface-visibility: hidden;
     }
@@ -314,6 +362,7 @@
         border-color: #999;
     }
     .tile .back {
+        transition: transform 0.1s;
         transform: rotateX(180deg);
     }
     .tile.revealed .front {
