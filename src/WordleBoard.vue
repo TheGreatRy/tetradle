@@ -17,7 +17,7 @@ const emit = defineEmits<{
 }>()
 
 // Scoring values - correct, present, absent
-const pointValues = [-10, -20, -30]
+const pointValues = [-100, -200, -300]
 
 // Handle keyboard input.
 let allowInput = true
