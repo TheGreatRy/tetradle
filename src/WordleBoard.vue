@@ -9,7 +9,7 @@ const props = defineProps<{
     active: boolean,
     id: number,
     answer: string,
-    dataArray: Tile[]
+    dataArray: Tile[][]
 }>()
 
 const emit = defineEmits<{
@@ -126,10 +126,14 @@ function completeRow() {
         allowInput = false
         if (currentRow.every((tile) => tile.state === LetterState.CORRECT)) {
             // yay!
-            for (let i = 0, j = currentRowIndex; i < (currentRowIndex + 1) * 5; i++)
+            for (let i = 0; i <= currentRowIndex; i++)
             {
-                if (i != 0 && i % 5 == 0) j--
-                props.dataArray[i] = new Tile(board[j][i % 5].character, board[j][i % 5].state);
+                const row = []
+                for (let j = 0; j < 5; j++)
+                {
+                    row.push(board[i][j])
+                }
+                props.dataArray.push(row)
             }
             setTimeout(() => {
                 grid = genResultGrid()

@@ -12,9 +12,9 @@ let answers: string[] = $ref(getRandomWords())
 let player0Done = false
 let player1Done = false
 let tetrisPhase = $ref(false)
-let leftWordle: Tile[] = $ref([])
-let rightWordle: Tile[] = $ref([])
-let tileData: Tile[] = $ref([])
+let leftWordle: Tile[][] = $ref([])
+let rightWordle: Tile[][] = $ref([])
+let tileData: Tile[][][] = $ref([])
 
 let score = $ref(0)
 let tetrisLevel = $ref(0)
@@ -31,18 +31,11 @@ function onWordleTurnFinished(id: number, state: TurnState, scoreCost: number) {
     }
     else if (!player0Done) currentPlayer = 0
 
-    else
+    if (player1Done && player0Done)
     {
-        let rightIndex = 0
-        for (let i = 0; i < leftWordle.length + rightWordle.length; i++)
-        {
-            if (i < leftWordle.length) tileData[i] = leftWordle[i]
-            else
-            {
-                tileData[i] = rightWordle[rightIndex]
-                rightIndex++
-            }
-        }
+        tileData.push(leftWordle)
+        tileData.push(rightWordle)
+        console.log(tileData)
 
         tetrisPhase = true
     }

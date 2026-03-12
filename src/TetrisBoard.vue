@@ -10,7 +10,7 @@
     const props = defineProps<{
         player: number,
         wordleAnswers: string[],
-        dataArray: Tile[]
+        dataArray: Tile[][][]
     }>()
 
     const emit = defineEmits<{
@@ -61,20 +61,32 @@
 
     function initializeBoard()
     {
+        for (let i = 0; i < props.dataArray.length; i++){
+            const side = props.dataArray[i]
+            for (let j = 0; j < side.length; j++) {
+                const boardRow = board.length - (side.length - j)
+                for (let k = 0; k < side[j].length; k++)
+                {
+                    if (props.dataArray[i][j][k].state !== LetterState.ABSENT) board[boardRow][k + (5 * i)] = props.dataArray[i][j][k]
+                }
+            }
+        }
+        /*
         //row amount
-        let r = (props.dataArray.length / 10)
 
         //last row up
-        let j = 19 - r + 1 //18 + 1
+        let j = $ref(19 - r + 1 )//18 + 1
 
         //iter from 19 -> j
 
         console.log(props.dataArray)
         for (let i = 0; i < props.dataArray.length; i++) {
             if (i != 0 && i % 10 == 0) r--
-            board[j][i % 10] = props.dataArray[i]
-            console.log(board[j][i % 10])
+            console.log(`${j}, ${i % 10}`)
+            board[j - r][i % 10] = props.dataArray[i]
+            console.log(board[j - r][i % 10])
         }
+        */
     }
 
     function onKey(e: KeyboardEvent) {
