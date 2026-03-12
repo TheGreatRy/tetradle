@@ -56,7 +56,6 @@
     onMounted(() => {
         emit('setFirstTetromino', upcomingTetromino)
         initializeBoard()
-        tick()
     })
 
     function initializeBoard()
@@ -71,22 +70,32 @@
                 }
             }
         }
-        /*
-        //row amount
 
-        //last row up
-        let j = $ref(19 - r + 1 )//18 + 1
+        const maxLineHeight = Math.max(props.dataArray[0].length, props.dataArray[1].length)
+        const linesCleared = []
+        for (let i = board.length - 1; i >= board.length - maxLineHeight; i--)
+        {
+            let lineCleared = true
+            for (let j = 0; j < board[i].length; j++)
+            {
+                if (board[i][j].state === LetterState.INITIAL) {
+                    lineCleared = false
+                    break
+                }
+            }
 
-        //iter from 19 -> j
-
-        console.log(props.dataArray)
-        for (let i = 0; i < props.dataArray.length; i++) {
-            if (i != 0 && i % 10 == 0) r--
-            console.log(`${j}, ${i % 10}`)
-            board[j - r][i % 10] = props.dataArray[i]
-            console.log(board[j - r][i % 10])
+            if (lineCleared) linesCleared.push(i)
         }
-        */
+
+        if (linesCleared.length !== 0) {
+            setTimeout(() => {
+                clearLines(linesCleared)
+            }, 1000)
+            setTimeout(() => {
+                tick()
+            }, 2000)
+        }
+        else tick()
     }
 
     function onKey(e: KeyboardEvent) {
@@ -172,7 +181,7 @@
     }
 
     function endTurn() {
-        clearLines()
+        clearLines(findLinesCleared())
 
         setTimeout(() => {
             turnDelay = 0
@@ -196,7 +205,7 @@
         }, turnDelay * 0.9)
     }
 
-    function clearLines() {
+    function findLinesCleared() {
         allowInput = false
         let minY = 100
         let maxY = -100
@@ -220,6 +229,10 @@
             if (lineCleared) linesCleared.push(i)
         }
 
+        return linesCleared
+    }
+
+    function clearLines(linesCleared: number[]) {
         if (linesCleared.length === 0) return
 
         turnDelay = 1000
