@@ -21,6 +21,7 @@ const submitGuessSfx = new Audio("/SFX/submit_guess.wav")
 const correctGuessSfx = new Audio("/SFX/correct_guess.wav")
 const incorrectGuessSfx = new Audio("/SFX/incorrect_guess.wav")
 const typeSfx = new Audio("/SFX/type.wav")
+const backspaceSfx = new Audio("/SFX/backspace.wav")
 
 // Scoring values - correct, present, absent
 const pointValues = [-100, -200, -300]
@@ -64,6 +65,7 @@ function onKey(key: string) {
         typeSfx.cloneNode().play()
         fillTile(key.toLowerCase())
     } else if (key === 'Backspace') {
+        backspaceSfx.cloneNode().play()
         clearTile()
     } else if (key === 'Enter') {
         completeRow()
