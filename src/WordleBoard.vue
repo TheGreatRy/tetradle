@@ -16,6 +16,12 @@ const emit = defineEmits<{
     (e: 'turnFinished', id: number, state: TurnState, scoreCost: number): void
 }>()
 
+// Sound effects
+const submitGuessSfx = new Audio("/SFX/submit_guess.wav")
+const correctGuessSfx = new Audio("/SFX/correct_guess.wav")
+const incorrectGuessSfx = new Audio("/SFX/incorrect_guess.wav")
+const typeSfx = new Audio("/SFX/type.wav")
+
 // Scoring values - correct, present, absent
 const pointValues = [-100, -200, -300]
 
@@ -55,6 +61,7 @@ onUnmounted(() => {
 function onKey(key: string) {
     if (!props.active || !allowInput) return
     if (/^[a-zA-Z]$/.test(key)) {
+        typeSfx.cloneNode().play()
         fillTile(key.toLowerCase())
     } else if (key === 'Backspace') {
         clearTile()
@@ -89,6 +96,7 @@ function completeRow() {
             showMessage(`You Definitely Need Autocorrect`)
             return
         }
+        submitGuessSfx.play()
 
         const answerLetters: (string | null)[] = props.answer.split('')
         let scoreCost = 0
@@ -145,6 +153,7 @@ function completeRow() {
                 )
                 success = true
                 emit('turnFinished', props.id, TurnState.WIN, scoreCost)
+                correctGuessSfx.play()
             }, 1600)    
         } else if (currentRowIndex < board.length - 1) {
             // go the next row
@@ -152,12 +161,14 @@ function completeRow() {
             setTimeout(() => {
                 allowInput = true
                 emit('turnFinished', props.id, TurnState.CONTINUE, scoreCost)
+                incorrectGuessSfx.play()
             }, 1600)
         } else {
         // game over :(
         setTimeout(() => {
             showMessage(props.answer.toUpperCase(), -1)
             emit('turnFinished', props.id, TurnState.LOSS, scoreCost)
+            incorrectGuessSfx.play()
             }, 1600)
         }
     } 
