@@ -6,11 +6,6 @@
     import {Tile } from './tile'
 
     defineExpose({initializeBoard})
-    const rotateSfx = new Audio("/SFX/rotate.wav")
-    const moveSfx = new Audio("/SFX/move.wav")
-    const lineClearSfx = new Audio("/SFX/line_clear.wav")
-    const bgMusic = new Audio("/SFX/tetradle_marimba.wav")
-    const rotateSoundPlayer = ref(null)
 
     const props = defineProps<{
         player: number,
@@ -23,6 +18,13 @@
         (e: 'setFirstTetromino', firstTetromino: Tetromino): void
     }>()
 
+    // Sound effects
+    const rotateSfx = new Audio("/SFX/rotate.wav")
+    const moveSfx = new Audio("/SFX/move.wav")
+    const hardDropSfx = new Audio("/SFX/hard_drop.wav")
+    const lineClearSfx = new Audio("/SFX/line_clear.wav")
+    const loseSfx = new Audio("/SFX/lose.wav")
+    const bgMusic = ref(null)
 
     // Handle keyboard input.
     let allowInput = true
@@ -59,12 +61,7 @@
     })
 
     onMounted(() => {
-        const audioElement0 = document.createElement('audio');
-        audioElement0.setAttribute('src', '/SFX/tetradle_marimba.wav');
-        audioElement0.setAttribute('autoplay', 'autoplay');
-        audioElement0.setAttribute('loop', 'true');
-        audioElement0.play(); 
-        //bgMusic.play()
+        bgMusic.value.play()
         emit('setFirstTetromino', upcomingTetromino)
         initializeBoard()
     })
@@ -218,6 +215,10 @@
             draw(truePos, currentTetromino.letterState)
 
             emit('turnFinished', lost ? TurnState.LOSS : TurnState.CONTINUE, turnPoints, level, lines, upcomingTetromino)
+            if (lost) {
+                bgMusic.value.pause()
+                loseSfx.play()
+            }
             turnPoints = 0
             allowInput = !lost
         }, turnDelay * 0.9)
@@ -297,9 +298,16 @@
     }
 
     function hardDrop() {
+        let droppedOne = false
         while (true) {
-            if (dropOne()) turnPoints++
-            else break
+            if (dropOne()) {
+                droppedOne = true
+                turnPoints++
+            }
+            else {
+                if (droppedOne) hardDropSfx.cloneNode().play()
+                break
+            }
         }
     }
 
@@ -361,6 +369,7 @@
 
 <template>
     <div>
+        <audio ref="bgMusic" src="/SFX/tetradle_marimba.wav" loop="loop"></audio>
         <div id="board">
             <div v-for="(row, index) in board" class="row">
                 <div v-for="(tile, index) in row"
