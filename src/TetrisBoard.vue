@@ -1,11 +1,16 @@
 <script setup lang="ts">
-    import { onUnmounted, onMounted } from 'vue'
+    import { onUnmounted, onMounted, ref } from 'vue'
     import { allWords, letters } from './words'
     import { LetterState, TurnState, Vector2 } from './types'
     import { getRandomTetromino, Tetromino } from './tetrominos'
     import {Tile } from './tile'
 
     defineExpose({initializeBoard})
+    const rotateSfx = new Audio("/SFX/rotate.wav")
+    const moveSfx = new Audio("/SFX/move.wav")
+    const lineClearSfx = new Audio("/SFX/line_clear.wav")
+    const bgMusic = new Audio("/SFX/tetradle_marimba.wav")
+    const rotateSoundPlayer = ref(null)
 
     const props = defineProps<{
         player: number,
@@ -54,6 +59,12 @@
     })
 
     onMounted(() => {
+        const audioElement0 = document.createElement('audio');
+        audioElement0.setAttribute('src', '/SFX/tetradle_marimba.wav');
+        audioElement0.setAttribute('autoplay', 'autoplay');
+        audioElement0.setAttribute('loop', 'true');
+        audioElement0.play(); 
+        //bgMusic.play()
         emit('setFirstTetromino', upcomingTetromino)
         initializeBoard()
     })
@@ -136,10 +147,14 @@
         }
         if (canMove) eraseLetters(currentPos)
         draw(canMove ? resultingPos : currentPos, currentTetromino.letterState)
-        if (canMove) currentTetromino.move(vector)
+        if (canMove) {
+            moveSfx.cloneNode().play()
+            currentTetromino.move(vector)
+        }
     }
 
     function rotate() {
+        if (currentTetromino.letterState == LetterState.TETROMINO_O) return
         const currentPos = currentTetromino.getTruePosition()
         const resultingPos = currentTetromino.getPosIfRotated()
         let canRotate = true
@@ -152,7 +167,10 @@
         }
         if (canRotate) eraseLetters(currentPos)
         draw(canRotate ? resultingPos : currentPos, currentTetromino.letterState)
-        if (canRotate) currentTetromino.rotate()
+        if (canRotate) {
+            rotateSfx.cloneNode().play()
+            currentTetromino.rotate()
+        }
     }
 
     function dropOne() {
@@ -234,6 +252,7 @@
 
     function clearLines(linesCleared: number[]) {
         if (linesCleared.length === 0) return
+        lineClearSfx.cloneNode().play()
 
         turnDelay = 1000
         switch (linesCleared.length) {
@@ -285,7 +304,10 @@
     }
 
     function softDrop() {
-        if (dropOne()) turnPoints++
+        if (dropOne()) {
+            moveSfx.cloneNode().play()
+            turnPoints++
+        }
     }
 
     function eraseLetters(pos: Vector2[]) {
@@ -342,13 +364,11 @@
         <div id="board">
             <div v-for="(row, index) in board" class="row">
                 <div v-for="(tile, index) in row"
-                    :class="['tile', tile.character && 'filled', (tile.state && tile.state !== 0) && 'revealed']"
-                >
+                     :class="['tile', tile.character && 'filled', (tile.state && tile.state !== 0) && 'revealed']">
                     <div :class="['front']">
                         {{ tile.character }}
                     </div>
-                    <div :class="['back', tile.state + ((tile.state === 'correct' || tile.state === 'present' || tile.state === 'absent') ? '-tetris' : '')]"
-                    >
+                    <div :class="['back', tile.state + ((tile.state === 'correct' || tile.state === 'present' || tile.state === 'absent') ? '-tetris' : '')]">
                         {{ tile.character }}
                     </div>
                 </div>
