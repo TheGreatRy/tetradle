@@ -1,7 +1,7 @@
 {
   "name": "vue-wordle",
   "version": "0.0.0",
-  "homepage": "https://{username}.github.io/{repo-name}/",
+  "homepage": "https://thegreatry.github.io/tetradle/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
