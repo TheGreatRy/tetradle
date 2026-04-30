@@ -48,7 +48,7 @@ jobs:
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Install Typescript
-        run: npx install typescript
+        run: npm install typescript
       - name: Build with Typescript
         run: npx tsc
       - name: Upload artifact
