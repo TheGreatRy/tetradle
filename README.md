@@ -1,9 +1,15 @@
-# Vue Wordle
+# Tetradle
+A local 2 player CO-OP game that combines the gameplay of Tetris and Wordle
 
-[Live demo](https://vue-wordle.netlify.app/)
+## How to Play
 
-A Vue implementation of the [Wordle game](https://www.powerlanguage.co.uk/wordle/). This is just for fun and doesn't aim to 100% replicate the original.
+## Credits
 
-You can make your own Wordle and send it to friends by base64-encoding a word and include it as the URL query, e.g. https://vue-wordle.netlify.app/?YmxpbXA= (this will also allow words that are not in the dictionary.)
-
-This repository is open sourced for learning purposes only - the original creator(s) of Wordle own all applicable rights to the game itself.
+### Repository
+This is a fork of [Vue Wordle](https://github.com/yyx990803/vue-wordle), which was the base of the Wordle portion of Tetradle
+### Developers
+- [@TheGreatRy](https://github.com/TheGreatRy)
+- [@timcaelys](https://github.com/timcaelus)
+### Sounds
+- SFX: 
+- Music: A Song That Might Play in a New York Times Elevator by [@TheGreatRy](https://github.com/TheGreatRy)
